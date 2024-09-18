@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+  text-decoration: none;
+}
+
+body {
+  font-family: "poppins", sans-serif;
+  @apply text-white bg-bg;
+}
+
+.disabled {
+  @apply bg-gray-400 cursor-not-allowed;
+}
+
+/* modal animation */
+@keyframes animateModal {
+  from {
+    top: -500px;
+    opacity: 0;
+  }
+  to {
+    top: 0;
+    opacity: 1;
+  }
+}

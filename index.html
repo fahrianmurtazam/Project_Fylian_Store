@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fylian Store</title>
+  <!-- feather icon -->
+  <script src="https://unpkg.com/feather-icons"></script>
+
+  <!-- fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet" />
+
+  <!-- css -->
+  <link rel="stylesheet" href="dist/output.css" />
+  <link rel="stylesheet" href="src/style.css">
+
+  <!-- alpine js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- midtrans -->
+  <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
+    data-client-key="SB-Mid-client-Oeke8k8z5SItt2vb">
+    </script>
+
+</head>
+
+<body>
+  <!-- navbar -->
+  <header class="fixed top-0 left-0 z-50 w-full" x-data>
+    <nav
+      class="relative flex items-center justify-between px-5 py-4 border-b-2 navbar bg-slate-800 bg-opacity-60 backdrop-blur-md border-primary">
+      <a href="#" class="text-2xl italic font-bold navbar-logo">Fylian<span class="text-primary"> Store</span></a>
+      <!-- mode desktop -->
+      <div class="hidden mx-5 ml-auto md:inline-block navbar-nav">
+        <ul class="flex gap-5 font-medium">
+          <li>
+            <a class="text-base hover:text-primary" href="#home">Home</a>
+          </li>
+          <li>
+            <a class="text-base hover:text-primary" href="#about">About</a>
+          </li>
+          <li>
+            <a class="text-base hover:text-primary" href="#menu">Menu</a>
+          </li>
+          <li>
+            <a class="text-base hover:text-primary" href="#product">Product</a>
+          </li>
+          <li>
+            <a class="text-base hover:text-primary" href="#contact">Contact</a>
+          </li>
+        </ul>
+      </div>
+      <!-- mode mobile  -->
+      <div id="nav-menu"
+        class="absolute py-5 top-full left-0 translate-x-[-1000px] h-[100vh] w-[45%] transition-all ease-in-out duration-500 bg-slate-900/90 backdrop-blur-md text-white shadow-md shadow-slate-300">
+        <ul class="py-8 space-y-8 font-medium text-center">
+          <li>
+            <a class="text-base hover:text-primary" href="#home">Home</a>
+          </li>
+          <li>
+            <a class="text-base hover:text-primary" href="#about">About</a>
+          </li>
+          <li>
+            <a class="text-base hover:text-primary" href="#menu">Menu</a>
+          </li>
+          <li>
+            <a class="text-base hover:text-primary" href="#product">Product</a>
+          </li>
+          <li>
+            <a class="text-base hover:text-primary" href="#contact">Contact</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="flex gap-5">
+        <button class="hover:text-primary" id="search-btn">
+          <i data-feather="search"></i>
+        </button>
+        <button class="relative hover:text-primary" id="shopping-cart-btn">
+          <i data-feather="shopping-cart"></i>
+          <span class="absolute top-3 px-1 text-xs bg-red-500 rounded-full p-[2px]" x-show="$store.cart.quantity"
+            x-text="$store.cart.quantity"></span>
+        </button>
+        <button class="hover:text-primary md:hidden" id="hamburger-menu">
+          <i data-feather="menu"></i>
+        </button>
+      </div>
+
+      <!-- fitur search start -->
+      <div id="search-form"
+        class="absolute right-0 flex items-center w-3/4 h-10 overflow-hidden transition duration-300 ease-in-out origin-right scale-x-0 bg-white top-full md:w-1/2 rounded-s-full">
+        <input class="w-full px-5 py-1 text-black" type="search" id="search-box" placeholder="Search here...">
+        <label class="mr-4 text-black cursor-pointer" for="search-box"><i data-feather="search"></i></label>
+      </div>
+      <!-- search end -->
+
+      <!-- shopping cart start -->
+      <div
+        class="shopping-cart absolute top-full right-0 h-screen overflow-y-scroll w-[60%] md:w-[55%] md:px-2 bg-slate-100 text-black shadow-md shadow-primary transition ease-linear duration-300 translate-x-[1000px]">
+        <template x-for="(item, index) in $store.cart.items" x-key="index">
+          <div
+            class="relative flex flex-col items-center gap-4 px-2 py-2 border-b-2 cart-item md:flex-row border-primary">
+            <img class="rounded-md w-28" :src="`img/${item.img}`" :alt="item.name">
+            <div class="item-detail">
+              <h3 class="font-semibold" x-text="item.name"></h3>
+              <div class="text-sm item-price">
+                <span x-text="rupiah(item.price)"></span> &times;
+                <button id="remove" @click="$store.cart.remove(item.id)"
+                  class="px-3 font-bold text-white cursor-pointer rounded-xl bg-slate-700">&minus;</button>
+                <span class="px-1" x-text='item.quantity'></span>
+                <button id="add" @click="$store.cart.add(item)"
+                  class="px-3 mr-1 font-bold text-white cursor-pointer rounded-xl bg-slate-700">&plus;</button>&equals;
+                <span class="italic font-medium" x-text="rupiah(item.total)"></span>
+              </div>
+            </div>
+          </div>
+        </template>
+        <h4 x-show="!$store.cart.items.length" class="py-4 text-2xl font-bold text-center shadow-md ">Cart is Empty</h4>
+        <h4 x-show="$store.cart.items.length" class="px-4 py-2 text-lg font-bold text-center shadow-md text-primary ">
+          Total : <span x-text="rupiah($store.cart.total)"></span></h4>
+        <!-- form checkout -->
+        <div x-show="$store.cart.items.length" class="container px-4 py-3 pb-20">
+          <form action="" id="checkout-form" class="flex flex-col justify-center pb-4 md:gap-4">
+            <input type="hidden" name="items" x-model="JSON.stringify($store.cart.items)">
+            <input type="hidden" name="total" x-model="$store.cart.total">
+            <h5 class="py-1 text-lg font-semibold text-center">Customer Detail</h5>
+            <label for="name" class="pt-1 md:flex md:justify-center md:gap-2">
+              <span>Name</span>
+              <input type="text" name="name" id="name"
+                class="text-base text-center text-white rounded-md bg-slate-900 ring-1 ring-cyan-400 w-full md:w-80">
+            </label>
+
+            <label for="email" class="pt-1 md:flex md:justify-center md:gap-2">
+              <span>Email</span>
+              <input type="email" name="email" id="email"
+                class="text-base text-center text-white rounded-md bg-slate-900 ring-1 ring-cyan-400 w-full md:w-80">
+            </label>
+
+            <label for="phone" class="pt-1 md:flex md:justify-center md:gap-2">
+              <span>Phone</span>
+              <input type="number" name="phone" id="phone" autocomplete="off"
+                class="text-base text-center text-white rounded-md bg-slate-900 ring-1 ring-cyan-400 w-full md:w-80">
+            </label>
+
+            <button type="submit" id="checkout-btn" value="checkout"
+              class="disabled px-4 my-3 py-2 text-white rounded-md bg-blue-500 w-40 flex justify-center m-auto hover:bg-blue-700">Checkout</button>
+          </form>
+        </div>
+      </div>
+      <!-- shopping cart end -->
+    </nav>
+  </header>
+  <!-- navbar end -->
+
+  <!-- hero section -->
+  <section id="home">
+    <div class="relative">
+      <div style="background-image: url(img/coffe.jpg);"
+        class="masking relative top-full my-5 h-[500px] w-full bg-no-repeat bg-cover bg-center">
+      </div>
+      <main
+        class="absolute w-full px-4 py-4 text-center top-16 md:py-8 md:grid md:grid-cols-2 md:justify-items-center md:content-center">
+        <h1 class="text-3xl font-bold md:tracking-wide md:text-4xl">
+          Mari Nikmati Secangkir <span class="text-primary">Kopi</span>
+        </h1>
+        <p class="py-2 font-light md:text-lg md:px-4">
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+        </p>
+        <div class="absolute top-[350px]">
+          <a class="hidden px-4 py-1 rounded-md shadow-md md:inline-block shadow-amber-500 bg-primary hover:bg-amber-700 md:text-lg"
+            href="#">Beli Sekarang</a>
+        </div>
+      </main>
+    </div>
+  </section>
+  <!-- hero section end -->
+
+  <!-- about section -->
+  <section id="about">
+    <div class="container py-24">
+      <div class="pb-12 text-3xl font-bold text-center">
+        <h1>Tentang <span class="text-primary">Kami</span></h1>
+      </div>
+      <div class="flex flex-wrap justify-center md:justify-evenly">
+        <img src="img/about.jpg" width="350px" height="350px" alt="coffe" />
+        <div class="py-4 max-w-80 lg:max-w-md md:py-12">
+          <h2 class="py-2 text-lg font-semibold text-amber-500">
+            Kenapa memilih kopi kami ?
+          </h2>
+          <p class="font-light text-justify lg:text-base">
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit.
+            Voluptates dolores corporis mollitia ipsa laudantium? Excepturi,
+            inventore cumque Lorem, ipsum dolor sit amet consectetur
+            adipisicing elit.
+          </p>
+          <p class="font-light text-justify lg:text-base">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam
+            ducimus blanditiis quos. Lorem ipsum dolor sit amet, consectetur
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            Reprehenderit.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- about end -->
+
+  <!-- menu section -->
+  <section id="menu">
+    <div class="py-24 w-full bg-amber-950">
+      <div class="pb-8 text-3xl font-bold text-center">
+        <h1>Menu <span class="text-primary">Kami</span></h1>
+      </div>
+      <div class="max-w-md px-4 mx-auto font-light text-center md:max-w-lg md:text-base">
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio nostrum totam voluptas neque. Molestiae sed
+          nam et quae omnis earum.</p>
+      </div>
+      <div class="flex flex-wrap justify-center gap-6 px-5 pt-8">
+        <div class="grid overflow-hidden menu-card content-center-center bg-primary rounded-2xl ">
+          <img src="img/menu1.jpg" alt="Coffee" class="w-72 md:w-52 md:h-40">
+          <div class="px-4 py-2">
+            <h3 class="text-lg font-bold text-bg">Cappuccino</h3>
+            <p class="">IDR 15 K</p>
+          </div>
+        </div>
+        <div class="grid overflow-hidden menu-card content-center-center bg-primary rounded-2xl ">
+          <img src="img/menu2.jpg" alt="Coffee" class="w-72 md:w-52 md:h-40">
+          <div class="px-4 py-2">
+            <h3 class="text-lg font-bold text-bg">Expresso</h3>
+            <p class="">IDR 15 K</p>
+          </div>
+        </div>
+        <div class="grid overflow-hidden menu-card content-center-center bg-primary rounded-2xl ">
+          <img src="img/menu3.jpg" alt="Coffee" class="w-72 md:w-52 md:h-40">
+          <div class="px-4 py-2">
+            <h3 class="text-lg font-bold text-bg">Caramel Macchiato</h3>
+            <p class="">IDR 25 K</p>
+          </div>
+        </div>
+        <div class="grid overflow-hidden menu-card content-center-center bg-primary rounded-2xl ">
+          <img src="img/menu4.jpg" alt="Coffee" class="w-72 md:w-52 md:h-40">
+          <div class="px-4 py-2">
+            <h3 class="text-lg font-bold text-bg">Ice Coffee</h3>
+            <p class="">IDR 10 K</p>
+          </div>
+        </div>
+        <div class="grid overflow-hidden menu-card content-center-center bg-primary rounded-2xl ">
+          <img src="img/menu5.jpg" alt="Coffee" class="w-72 md:w-52 md:h-40">
+          <div class="px-4 py-2">
+            <h3 class="text-lg font-bold text-bg">Mocha</h3>
+            <p class="">IDR 20 K</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- menu end -->
+
+  <!-- section product -->
+  <section id="products" x-data="products">
+    <div class="container py-24 mx-auto">
+      <div class="pb-8 text-3xl font-bold text-center">
+        <h1>Produk Unggulan <span class="text-primary">Kami</span></h1>
+      </div>
+      <div class="max-w-md px-4 mx-auto font-light text-center md:max-w-lg md:text-base">
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio nostrum totam voluptas neque. Molestiae sed
+          nam.</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-5 py-5 mx-5 lg:gap-y-8 lg:gap-x-0 lg:mx-40 justify-items-center md:grid-cols-3">
+        <template x-for="(item, index) in items" x-key="index">
+          <div
+            class="grid content-center px-5 py-2 border-2 product-card max-w-80 md:max-w-60 bg-zinc-950 rounded-xl border-amber-700">
+            <div class="flex justify-center gap-4 product-icons">
+              <button class="p-2 border rounded-full border-amber-700 hover:bg-primary" @click="$store.cart.add(item)">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#shopping-cart" />
+                </svg>
+              </button>
+              <button id="item-detail-btn" class="p-2 border rounded-full border-amber-700 hover:bg-primary">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#eye" />
+                </svg>
+              </button>
+            </div>
+            <div class="py-3 product-image">
+              <img :src="`img/${item.img}`" :alt="item.name" class="rounded-md">
+            </div>
+            <div class="text-center product-content">
+              <h3 class="text-lg font-semibold" x-text="item.name"></h3>
+              <div class="flex justify-center pt-2 stars-icons gap-x-1">
+                <svg class="text-primary" width="20" height="20" fill="currentColor" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#star" />
+                </svg>
+                <svg class="text-primary" width="20" height="20" fill="currentColor" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#star" />
+                </svg>
+                <svg class="text-primary" width="20" height="20" fill="currentColor" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#star" />
+                </svg>
+                <svg class="text-primary" width="20" height="20" fill="currentColor" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#star" />
+                </svg>
+                <svg class="text-primary" width="20" height="20" fill="currentColor" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="img/feather-sprite.svg#star" />
+                </svg>
+              </div>
+              <div class="pt-2 text-center">
+                <p class="text-lg font-light price " x-text="rupiah(item.price)"></p>
+              </div>
+            </div>
+          </div>
+        </template>
+
+      </div>
+    </div>
+  </section>
+  <!-- product end -->
+
+  <!-- contact section -->
+  <section id="contact">
+    <div class="px-5 py-24 w-full bg-stone-900">
+      <div class="pb-8 text-3xl font-bold text-center">
+        <h1>Kontak <span class="text-primary">Kami</span>
+          <h1>
+      </div>
+      <div class="max-w-md px-4 mx-auto font-light text-center md:max-w-lg md:text-base">
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio rerum, dolore maiores magni placeat.</p>
+      </div>
+
+      <div class="grid justify-items-center md:grid-cols-2 md:items-center">
+        <iframe class="min-w-full px-5 py-8 h-72"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63536.6296474489!2d95.28750232701137!3d5.561185900952888!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3040377ae63dbcdf%3A0x3039d80b220cb90!2sBanda%20Aceh%2C%20Kota%20Banda%20Aceh%2C%20Aceh!5e0!3m2!1sid!2sid!4v1719133869900!5m2!1sid!2sid"
+          allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <div class="min-w-full md:w-2/4">
+          <div class="flex gap-3 px-5 py-2">
+            <i data-feather="user"></i>
+            <input type="text" placeholder="Nama"
+              class="w-full p-1 text-center rounded-lg bg-slate-900 ring-1 ring-cyan-400">
+          </div>
+          <div class="flex gap-3 px-5 py-2">
+            <i data-feather="mail"></i>
+            <input type="email" placeholder="Email"
+              class="w-full p-1 text-center rounded-lg bg-slate-900 ring-1 ring-cyan-400">
+          </div>
+          <div class="flex gap-3 px-5 py-2">
+            <i data-feather="phone"></i>
+            <input type="number" placeholder="No HP"
+              class="w-full p-1 text-center rounded-lg bg-slate-900 ring-1 ring-cyan-400">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- contact end -->
+
+  <!-- footer start -->
+  <footer>
+    <div class="w-full px-4 py-5 bg-yellow-900">
+      <div class="flex justify-center py-4 gap-x-8">
+        <a class="hover:text-cyan-400" href=""><i data-feather="instagram"></i></a>
+        <a class="hover:text-cyan-400" href=""><i data-feather="facebook"></i></a>
+        <a class="hover:text-cyan-400" href=""><i data-feather="twitter"></i></a>
+      </div>
+      <div class="flex justify-center gap-x-4">
+        <a class="hover:text-slate-900 hover:font-semibold" href="#home">Home</a>
+        <a class="hover:text-slate-900 hover:font-semibold" href="#about">About</a>
+        <a class="hover:text-slate-900 hover:font-semibold" href="#menu">Menu</a>
+        <a class="hover:text-slate-900 hover:font-semibold" href="#contact">Contact</a>
+      </div>
+      <div class="pt-4 font-semibold text-center">
+        <p>Created By <a href="" class="text-cyan-500 hover:text-slate-900">Fahrian Murtazam</a>. | &copy; 2024</p>
+        <hr>
+      </div>
+    </div>
+  </footer>
+  <!-- footer end -->
+
+  <!-- modal box item start -->
+  <div id="item-detail-modal"
+    class="modal fixed hidden items-center top-0 left-0 h-screen w-full z-50 overflow-auto bg-slate-900/50 backdrop-blur-sm animate-[animateModal_0.5s_ease-in-out]">
+    <div class="container relative w-4/5 px-4 py-2 mx-auto my-4 text-black rounded-lg bg-slate-50">
+      <button class="absolute top-0 right-0 p-2 font-medium text-red-500 close-icon"><i data-feather="x"></i></button>
+      <div class="flex flex-wrap py-4 modal-content md:flex-nowrap md:py-2">
+        <img class="my-4 rounded-md md:my-0 md:w-48 md:h-48 md:self-center" src="img/p1.jpeg" alt="product 1">
+        <div class="px-2 product-content md:px-5">
+          <h3 class="text-lg font-semibold text-amber-600 md:text-center">Product 1</h3>
+          <p class="py-2 text-sm font-light leading-5 text-justify">Lorem ipsum dolor sit amet consectetur adipisicing
+            elit. Vero optio molestiae harum doloremque, quasi, consequatur ipsa deleniti beatae officiis temporibus
+            numquam.</p>
+          <div class="flex justify-center stars-icons gap-x-1">
+            <i data-feather="star" class="fill-primary text-primary"></i>
+            <i data-feather="star" class="fill-primary text-primary"></i>
+            <i data-feather="star" class="fill-primary text-primary"></i>
+            <i data-feather="star" class="fill-primary text-primary"></i>
+            <i data-feather="star" class="text-primary"></i>
+          </div>
+          <div>
+            <p class="py-2 text-base font-semibold price">IDR 30K</p>
+            <button class="flex gap-3 px-3 py-2 text-white rounded-md bg-primary hover:bg-amber-700"><i
+                data-feather="shopping-cart" class="text-sm"></i><span class="text-sm">add to cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- modal box item end -->
+
+  <script src="dist/main.js"></script>
+
+  <!-- feather icon -->
+  <script>
+    feather.replace();
+  </script>
+
+  <!-- app -->
+  <script src="dist/app.js"></script>
+</body>
+
+</html>
